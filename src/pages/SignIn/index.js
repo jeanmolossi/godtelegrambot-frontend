@@ -33,7 +33,6 @@ export default function SignIn() {
 
   const handleSubmit = ({ email, password }) => {
     dispatch(signInRequest(email, password));
-    console.tron.log({ email, password });
   };
 
   return (

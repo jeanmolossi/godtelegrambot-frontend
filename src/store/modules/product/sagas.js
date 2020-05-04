@@ -3,7 +3,12 @@ import { toast } from 'react-toastify';
 
 import api from '~/services/api';
 
-import { syncSuccess, syncFailure } from './actions';
+import {
+  syncSuccess,
+  syncFailure,
+  updateSuccess,
+  updateFailure,
+} from './actions';
 
 export function* syncResquest({ payload }) {
   try {
@@ -23,4 +28,23 @@ export function* syncResquest({ payload }) {
   }
 }
 
-export default all([takeLatest('@product/SYNC_REQUEST', syncResquest)]);
+export function* updateRequest({ payload }) {
+  try {
+    const { productPk, productName } = payload;
+    console.tron.log(payload);
+    yield call(api.put, `product/${productPk}`, {
+      productName,
+    });
+
+    yield put(updateSuccess());
+    toast.success('Produto atualizado com sucesso!');
+  } catch (error) {
+    yield put(updateFailure());
+    toast.error('Não foi possível atualizar o produto');
+  }
+}
+
+export default all([
+  takeLatest('@product/SYNC_REQUEST', syncResquest),
+  takeLatest('@product/UPDATE_REQUEST', updateRequest),
+]);

@@ -12,3 +12,18 @@ export function syncSuccess() {
 export function syncFailure() {
   return { type: '@product/SYNC_FAILURE' };
 }
+
+export function updateRequest(productPk, productName) {
+  return {
+    type: '@product/UPDATE_REQUEST',
+    payload: { productPk, productName },
+  };
+}
+
+export function updateSuccess() {
+  return { type: '@product/UPDATE_SUCCESS' };
+}
+
+export function updateFailure() {
+  return { type: '@product/UPDATE_FAILURE' };
+}

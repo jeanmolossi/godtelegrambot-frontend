@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { toast } from 'react-toastify';
 import { Form } from '@rocketseat/unform';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import {
   FiShoppingBag,
@@ -11,6 +11,8 @@ import {
 
 import api from '~/services/api';
 
+import { updateRequest } from '~/store/modules/product/actions';
+
 import CardLayout from '../_layouts/CardLayout';
 
 import InputController from '~/components/InputController';
@@ -20,6 +22,10 @@ import { Container } from './styles';
 
 export default function ProductOptions() {
   const { id } = useParams();
+
+  const dispatch = useDispatch();
+
+  const loadingState = useSelector(state => state.product.loading);
 
   const [loading, setLoading] = useState(false);
   const [product, setProduct] = useState({});
@@ -40,9 +46,12 @@ export default function ProductOptions() {
     setLoading(false);
   }, []);
 
-  const handleSubmit = useCallback(data => {
-    toast.success('Atualizado com sucesso!');
-  }, []);
+  const handleSubmit = useCallback(
+    ({ productName }) => {
+      dispatch(updateRequest(id, productName));
+    },
+    [id, dispatch]
+  );
 
   useEffect(() => {
     loadProductInfo(id);
@@ -87,7 +96,9 @@ export default function ProductOptions() {
             disabled
           />
 
-          <InputControllerButton type="submit">Salvar</InputControllerButton>
+          <InputControllerButton type="submit">
+            {loadingState ? 'Carregando...' : 'Salvar'}
+          </InputControllerButton>
         </Form>
       </CardLayout>
     </Container>

@@ -39,7 +39,7 @@ export function* loadConfig({ payload }) {
     email: payload.email,
   });
 
-  if (response.status !== 200) return;
+  if (response.status !== 200) yield put(saveConfigFailure());
   const { consumerKey } = response.data.Config;
 
   yield put(saveConfigSuccess(consumerKey));
