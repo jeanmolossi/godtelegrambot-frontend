@@ -13,14 +13,21 @@ export function* saveConfig({ payload }) {
     const issetConfig = yield select(stateSelector);
 
     let response = null;
-    if (issetConfig && issetConfig !== undefined) {
+    if (issetConfig && issetConfig.config !== null && consumerKey !== '') {
       response = yield call(api.put, 'config', {
         consumerKey,
       });
-    } else {
+    } else if (
+      issetConfig &&
+      issetConfig.config === null &&
+      consumerKey !== ''
+    ) {
       response = yield call(api.post, 'config', {
         consumerKey,
       });
+    } else {
+      response = yield call(api.delete, 'config');
+      response.data.consumerKey = null;
     }
 
     yield put(saveConfigSuccess(response.data.consumerKey));
@@ -35,14 +42,16 @@ export function* saveConfig({ payload }) {
 }
 
 export function* loadConfig({ payload }) {
-  const response = yield call(api.post, 'config/rehydrate', {
-    email: payload.email,
-  });
+  try {
+    const response = yield call(api.post, 'config/rehydrate', {
+      email: payload.email,
+    });
+    const { consumerKey } = response.data.Config;
 
-  if (response.status !== 200) yield put(saveConfigFailure());
-  const { consumerKey } = response.data.Config;
-
-  yield put(saveConfigSuccess(consumerKey));
+    yield put(saveConfigSuccess(consumerKey));
+  } catch (error) {
+    yield put(saveConfigFailure());
+  }
 }
 
 export default all([
